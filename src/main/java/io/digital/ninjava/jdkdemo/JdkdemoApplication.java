@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 public class JdkdemoApplication {
 
     @RequiredArgsConstructor
-    enum Demo {
+    enum JdkFeature {
         HELP((args) -> {
             log.info("Please provide a valid demo as first argument. Valid arguments are:\n {}",
                     StringUtils.join(values(), "\n "));
@@ -23,8 +23,8 @@ public class JdkdemoApplication {
         }),
         JEP_358(NPE),
         VAR((args) -> {
-            var stringArray = args;
-            var num = 1;
+            final var stringArray = args;
+            final var num = 1;
             log.info("{} and {}", stringArray, num);
         }),
         JEP_286(VAR),
@@ -68,18 +68,20 @@ public class JdkdemoApplication {
                     ;
             log.info("Using JEP 378: {}", json);
             log.info("Without JEP 378: {}", oldskool);
-        }), JEP_378(TEXT_BLOCKS);
+        }), JEP_378(TEXT_BLOCKS),
+        PATTERN_MATCHING(new PatternMatching()),
+        JEP_394(PATTERN_MATCHING);
 
-        private final Consumer<String[]> demo;
-        Demo(Demo alias) {
+        private final Demo demo;
+        JdkFeature(JdkFeature alias) {
             this(alias.demo);
         }
 
         public void go(String... args) {
-            demo.accept(args);
+            demo.go(args);
         }
 
-        public static Demo of(String val) {
+        public static JdkFeature of(String val) {
             return Stream.of(values())
                     .filter(candidate -> StringUtils.equalsIgnoreCase(candidate.name(), val))
                     .findFirst()
@@ -89,9 +91,9 @@ public class JdkdemoApplication {
 
     public static void main(String[] args) {
         if (args.length > 0) {
-            Demo.of(args[0]).go(Arrays.copyOfRange(args, 1, args.length));
+            JdkFeature.of(args[0]).go(Arrays.copyOfRange(args, 1, args.length));
         } else {
-            Demo.HELP.go();
+            JdkFeature.HELP.go();
         }
     }
 
